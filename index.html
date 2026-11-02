@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#1a1510" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+  <title>失憶贏政·流落民間</title>
+  <link rel="stylesheet" href="./css/style.css?v=1.0.1" />
+</head>
+<body>
+  <div id="app">
+    <!-- 標題 -->
+    <section id="screen-title" class="screen">
+      <div class="seal-title">
+        <h1>失憶贏政</h1>
+        <div class="sub">流落民間 · 文字冒險</div>
+        <div class="seal-mark">秦 · 未紀</div>
+      </div>
+      <div class="panel bamboo">
+        <p style="line-height:1.8;margin:0 0 8px;">
+          你自破驛醒來，不知姓名。殘玉、律令殘響與孤獨如影。
+          探索村落、與人交談、恢復記憶碎片——重奪皇位、隱於田園，或在火光中尋找自己。
+        </p>
+        <p class="hint" style="margin:0;">無 API Key 亦可遊玩示範模式；填入 DeepSeek Key 則由 AI 動態生成劇情。</p>
+        <div class="menu-actions">
+          <button type="button" class="primary" id="btn-new">新的流亡</button>
+          <button type="button" id="btn-continue">繼續前塵</button>
+          <button type="button" id="btn-settings">設定 · API</button>
+        </div>
+      </div>
+      <div class="footer-note">為豆豆製作 · <span id="app-version">v1.0.1</span></div>
+    </section>
+
+    <!-- 遊戲 -->
+    <section id="screen-game" class="screen" hidden>
+      <div id="game-shell">
+        <div class="toolbar">
+          <button type="button" id="btn-back-title">標題</button>
+          <button type="button" id="btn-save">存檔</button>
+          <button type="button" id="btn-export">匯出</button>
+          <button type="button" id="btn-import">匯入</button>
+          <button type="button" id="btn-settings-game">設定</button>
+          <span id="mode-badge">示範模式</span>
+        </div>
+        <div class="hud">
+          <div class="panel bamboo">
+            <div class="stats" style="margin-bottom:10px;">
+              <div><span class="stat-label">氣血</span><span id="stat-hp">—</span></div>
+              <div><span class="stat-label">精力</span><span id="stat-energy">—</span></div>
+              <div><span class="stat-label">錢</span><span id="stat-coin">—</span></div>
+              <div><span class="stat-label">糧</span><span id="stat-grain">—</span></div>
+              <div><span class="stat-label">聲望</span><span id="stat-renown">—</span></div>
+              <div><span class="stat-label">追查</span><span id="stat-threat">—</span></div>
+              <div><span class="stat-label">覺察</span><span id="stat-identity">—</span></div>
+              <div class="full"><span class="stat-label">時地</span><span id="stat-time">—</span> · <span id="stat-place">—</span></div>
+            </div>
+            <div id="narrative" class="narrative-box" aria-live="polite"></div>
+            <div id="choices"></div>
+            <div class="custom-row">
+              <input id="custom-input" type="text" maxlength="120" placeholder="自訂行動（如：詢問劉嫂關於宮中傳聞）" autocomplete="off" />
+              <button type="button" id="custom-btn">行之</button>
+            </div>
+            <div id="status-line"></div>
+          </div>
+          <aside class="panel side">
+            <h3>記憶碎片</h3>
+            <ul id="memories"></ul>
+            <h3>行囊</h3>
+            <ul id="inventory"></ul>
+            <h3>世事旗標</h3>
+            <div id="flags"></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- 設定 -->
+    <section id="screen-settings" class="screen" hidden>
+      <div class="panel">
+        <h2 style="margin-top:0;letter-spacing:0.15em;">設定</h2>
+        <p class="hint">
+          DeepSeek Chat Completions（OpenAI 相容）：預設模型 <code>deepseek-flash</code>。
+          瀏覽器直連若遇 CORS，請勾選「使用本機 proxy」並執行 <code>node server.js</code>（埠 8788）。
+          API Key 只存你瀏覽器的 localStorage，不會寫進專案檔。
+        </p>
+        <div class="settings-grid">
+          <label for="set-apikey">DeepSeek API Key</label>
+          <input id="set-apikey" type="password" placeholder="sk-…" autocomplete="off" />
+
+          <label for="set-base">API Base URL</label>
+          <input id="set-base" type="text" value="https://api.deepseek.com" />
+
+          <label for="set-model">模型</label>
+          <select id="set-model">
+            <option value="deepseek-flash">deepseek-flash（建議）</option>
+            <option value="deepseek-v4-pro">deepseek-v4-pro</option>
+            <option value="deepseek-chat">deepseek-chat（舊別名，或已失效）</option>
+          </select>
+
+          <label class="check"><input id="set-proxy" type="checkbox" /> 使用本機 proxy（避開 CORS）</label>
+          <label for="set-proxy-url">Proxy URL</label>
+          <input id="set-proxy-url" type="text" value="http://127.0.0.1:8788/v1/chat/completions" />
+
+          <label class="check"><input id="set-demo-force" type="checkbox" /> 強制示範模式（忽略 Key）</label>
+        </div>
+        <div class="menu-actions" style="max-width:none;flex-direction:row;flex-wrap:wrap;">
+          <button type="button" class="primary" id="settings-save">儲存設定</button>
+          <button type="button" id="btn-back-game">返回遊戲</button>
+          <button type="button" id="btn-settings-to-title">返回標題</button>
+        </div>
+        <p id="settings-msg" class="hint"></p>
+      </div>
+    </section>
+  </div>
+  <script type="module" src="./js/main.js?v=1.0.1"></script>
+</body>
+</html>
